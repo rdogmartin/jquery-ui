@@ -107,7 +107,16 @@ $.widget( "ui.menubar", {
 							clearTimeout( that.closeTimer );
 						}
 
-						that._open( event, menu );
+						if (that.options.autoExpand) {
+						  // Expand after a slight delay, which we'll cancel if the mouse leaves the element
+						  // before the delay is up. This prevents inadvertently opening the menu when the mouse
+						  // is just passing through the area.
+					    that.openTimer = window.setTimeout(function() {
+					      that._open(event, menu);
+					    }, 150);
+					  } else {
+					    that._open(event, menu);
+					  }
 					}
 				})
 				// TODO use _on
@@ -167,12 +176,14 @@ $.widget( "ui.menubar", {
 				clearTimeout( that.closeTimer );
 			},
 			focusout: function( event ) {
-				that.closeTimer = setTimeout( function() {
+			  clearTimeout(that.openTimer);
+			  that.closeTimer = setTimeout(function () {
 					that._close( event );
 				}, 150);
 			},
 			"mouseleave .ui-menubar-item": function( event ) {
-				if ( that.options.autoExpand ) {
+			  if (that.options.autoExpand) {
+			    clearTimeout(that.openTimer);
 					that.closeTimer = setTimeout( function() {
 						that._close( event );
 					}, 150);
@@ -260,7 +271,7 @@ $.widget( "ui.menubar", {
 		// set tabIndex -1 to have the button skipped on shift-tab when menu is open (it gets focus)
 		var button = menu.prev().addClass( "ui-state-active" ).attr( "tabIndex", -1 );
 		this.active = menu
-			.show()
+			.slideDown(200) // Replace show() with slideDown()
 			.position( $.extend({
 				of: button
 			}, this.options.position ) )
