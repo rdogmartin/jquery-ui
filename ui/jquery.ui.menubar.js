@@ -90,7 +90,8 @@ $.widget( "ui.menubar", {
 			// might be a non-menu button
 			if ( menu.length ) {
 				// TODO use _on
-				input.bind( "click.menubar focus.menubar mouseenter.menubar", function( event ) {
+			    	var eventsToTriggerOpen = 'focus.menubar mouseenter.menubar' + (that.options.autoExpand ? '' : ' click.menubar');
+			    	input.bind(eventsToTriggerOpen, function (event) {
 					// ignore triggered focus event
 					if ( event.type === "focus" && !event.originalEvent ) {
 						return;
